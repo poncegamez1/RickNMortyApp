@@ -14,5 +14,4 @@ interface RickAndMortyApi {
     @GET("character/{id}")
     suspend fun getCharacterDetail(@Path("id") id: Int): CharacterDto
 
-
 }

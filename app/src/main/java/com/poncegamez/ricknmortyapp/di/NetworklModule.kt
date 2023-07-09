@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 object NetworklModule {
 
-    private const val BASE_URL = "https://rickandmortyapi.com/api"
+    private const val BASE_URL = "https://rickandmortyapi.com/api/"
 
     @Provides
     @Singleton

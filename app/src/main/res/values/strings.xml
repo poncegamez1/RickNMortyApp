@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RickNMortyApp</string>
+    <string name="id_text_view">Id:</string>
+    <string name="name_text_view">Name:</string>
+    <string name="specie_text_view">Specie:</string>
+    <string name="picture_description">Picture</string>
 </resources>

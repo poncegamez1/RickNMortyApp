@@ -18,5 +18,9 @@
         android:id="@+id/detailFragment"
         android:name="com.poncegamez.ricknmortyapp.presentation.detail.DetailFragment"
         android:label="fragment_detail"
-        tools:layout="@layout/fragment_detail" />
+        tools:layout="@layout/fragment_detail" >
+        <argument
+            android:name="characterId"
+            app:argType="integer" />
+    </fragment>
 </navigation>
