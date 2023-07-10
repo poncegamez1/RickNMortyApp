@@ -24,13 +24,11 @@ class ListViewModel @Inject constructor(
 
     fun getCharactersFromServer() {
         viewModelScope.launch(coroutineContext) {
-            repository.getCharactersList(2).collect { results ->
+            repository.getCharactersList(1).collect { results ->
                 if (results is Results.Success) {
                     charactersState.postValue(results.data)
                 }
             }
         }
     }
-
-
 }

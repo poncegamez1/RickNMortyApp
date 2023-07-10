@@ -20,9 +20,7 @@ class ListAdapter(private val onItemClicked: (Characters) -> Unit) :
             binding.idContentTextView.text = characters.id.toString()
             binding.nameContentTextView.text = characters.name
             binding.specieContentTextView.text = characters.species
-            val picasso = Picasso.get()
-            picasso.isLoggingEnabled = true
-            picasso.load(characters.image).into(binding.pictureImageView)
+            Picasso.get().load(characters.image).into(binding.pictureImageView)
         }
     }
 

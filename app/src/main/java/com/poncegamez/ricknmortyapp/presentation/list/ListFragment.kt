@@ -53,9 +53,7 @@ class ListFragment : Fragment() {
                     listAdapter.appendItems(result)
                 }
             }
-
         }
-
     }
 
     private fun onCharacterClicked(character: Characters) {
@@ -63,5 +61,4 @@ class ListFragment : Fragment() {
             characterId = character.id
         ))
     }
-
 }
