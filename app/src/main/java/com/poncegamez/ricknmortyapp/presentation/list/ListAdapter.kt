@@ -2,18 +2,30 @@ package com.poncegamez.ricknmortyapp.presentation.list
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.poncegamez.ricknmortyapp.databinding.CardViewCharactersBinding
 import com.poncegamez.ricknmortyapp.models.Characters
 import com.squareup.picasso.Picasso
 
 
-class ListAdapter(private val onItemClicked: (Characters) -> Unit) :
-    RecyclerView.Adapter<ListAdapter.CharactersViewHolder>() {
+class ListAdapter :
+    PagingDataAdapter<Characters, ListAdapter.CharactersViewHolder>(diffCallback) {
 
-    private val characterItemList: ArrayList<Characters> = arrayListOf()
+    companion object {
+        val diffCallback = object : DiffUtil.ItemCallback<Characters>() {
+            override fun areItemsTheSame(oldItem: Characters, newItem: Characters): Boolean {
+                return oldItem.id == newItem.id
+            }
 
-    class CharactersViewHolder(private val binding: CardViewCharactersBinding) :
+            override fun areContentsTheSame(oldItem: Characters, newItem: Characters): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
+
+    inner class CharactersViewHolder(private val binding: CardViewCharactersBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(characters: Characters) {
@@ -21,6 +33,9 @@ class ListAdapter(private val onItemClicked: (Characters) -> Unit) :
             binding.nameContentTextView.text = characters.name
             binding.specieContentTextView.text = characters.species
             Picasso.get().load(characters.image).into(binding.pictureImageView)
+            binding.root.setOnClickListener {
+                onItemClickListener?.invoke(characters)
+            }
         }
     }
 
@@ -30,22 +45,14 @@ class ListAdapter(private val onItemClicked: (Characters) -> Unit) :
         return CharactersViewHolder(binding)
     }
 
-    override fun getItemCount(): Int {
-        return characterItemList.size
-    }
-
     override fun onBindViewHolder(holder: CharactersViewHolder, position: Int) {
-        val characters = characterItemList[position]
-        holder.bind(characters)
-        holder.itemView.setOnClickListener {
-            onItemClicked(characters)
-        }
+        holder.bind(getItem(position)!!)
+        holder.setIsRecyclable(false)
     }
 
-    fun appendItems(newItems: List<Characters>) {
-        characterItemList.clear()
-        characterItemList.addAll(newItems)
-        notifyDataSetChanged() //revisar
-    }
+    private var onItemClickListener: ((Characters) -> Unit)? = null
 
+    fun setOnItemClickListener(listener: (Characters) -> Unit) {
+        onItemClickListener = listener
+    }
 }
