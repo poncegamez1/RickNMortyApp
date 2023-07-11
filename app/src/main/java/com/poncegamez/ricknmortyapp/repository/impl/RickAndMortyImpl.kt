@@ -7,8 +7,6 @@ import com.poncegamez.ricknmortyapp.models.CharacterDetail
 import com.poncegamez.ricknmortyapp.models.Characters
 import com.poncegamez.ricknmortyapp.repository.RickAndMortyRepository
 import com.poncegamez.ricknmortyapp.result.Results
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
 import java.lang.Exception
@@ -18,22 +16,21 @@ class RickAndMortyImpl @Inject constructor(
     private val rickAndMortyApi: RickAndMortyApi
     ): RickAndMortyRepository {
 
-    override fun getCharactersList(page: Int): Flow<Results<List<Characters>>> = flow {
-        emit(Results.Loading())
-        try {
+    override suspend fun getCharactersList(page: Int): Results<List<Characters>> {
+        return try {
             val response = rickAndMortyApi.getCharactersList(page)
             val charactersList = response.results.map { CharactersMapper.map(it) }
-            emit(Results.Success(charactersList))
+            Results.Success(charactersList)
         } catch (e: HttpException) {
-            emit(Results.Error(
+            Results.Error(
                 message = "Something went wrong!!",
                 data = null
-            ))
-        } catch (e: IOException){
-            emit(Results.Error(
+            )
+        } catch (e: IOException) {
+            Results.Error(
                 message = "Check your internet connection",
                 data = null
-            ))
+            )
         }
     }
 
