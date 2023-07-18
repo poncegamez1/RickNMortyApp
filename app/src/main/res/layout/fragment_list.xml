@@ -5,16 +5,36 @@
     android:id="@+id/Constraintlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.list.ListFragment" >
+    tools:context=".presentation.list.ListFragment">
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/list_search_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/searchview_background"
+        android:focusable="false"
+        android:hapticFeedbackEnabled="false"
+        android:queryHint="Search Character"
+        android:searchHintIcon="@null"
+        app:layout_constraintBottom_toTopOf="@+id/list_recycler_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="#E15555"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/list_search_view"
         tools:listitem="@layout/card_view_characters" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
