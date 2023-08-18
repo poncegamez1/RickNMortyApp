@@ -7,7 +7,9 @@ import com.poncegamez.ricknmortyapp.repository.RickAndMortyRepository
 import com.poncegamez.ricknmortyapp.result.Results
 import java.lang.Exception
 
-class RickAndMortyPagingSource(private val repository: RickAndMortyRepository) :
+private const val RNM_STARTING_PAGE_INDEX = 1
+
+class RickAndMortyPagingSource(private val repository: RickAndMortyRepository, private val query: String? = null) :
     PagingSource<Int, Characters>() {
 
     override fun getRefreshKey(state: PagingState<Int, Characters>): Int? {
@@ -16,9 +18,9 @@ class RickAndMortyPagingSource(private val repository: RickAndMortyRepository) :
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Characters> {
         return try {
-            val currentPage = params.key ?: 1
+            val currentPage = params.key ?: RNM_STARTING_PAGE_INDEX
 
-            when (val response = repository.getCharactersList(currentPage)) {
+            when (val response = repository.searchCharacters(query, currentPage)) {
                 is Results.Success -> {
                     val data = response.data ?: emptyList()
                     val responseData = mutableListOf<Characters>()
@@ -26,23 +28,23 @@ class RickAndMortyPagingSource(private val repository: RickAndMortyRepository) :
 
                     LoadResult.Page(
                         data = responseData,
-                        prevKey = if (currentPage == 1) null else -1,
-                        nextKey = currentPage.plus(1)
+                        prevKey = if (currentPage == RNM_STARTING_PAGE_INDEX) null else currentPage - 1,
+                        nextKey = currentPage + 1
                     )
                 }
                 is Results.Error -> {
                     LoadResult.Error(Exception(response.message))
                 }
-
-                is Results.Loading -> LoadResult.Page(
-                    data = emptyList(),
-                    prevKey = if (currentPage == 1) null else -1,
-                    nextKey = currentPage.plus(1)
-                )
+                is Results.Loading -> {
+                    LoadResult.Page(
+                        data = emptyList(),
+                        prevKey = if (currentPage == RNM_STARTING_PAGE_INDEX) null else currentPage - 1,
+                        nextKey = currentPage + 1
+                    )
+                }
             }
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
     }
-
 }
