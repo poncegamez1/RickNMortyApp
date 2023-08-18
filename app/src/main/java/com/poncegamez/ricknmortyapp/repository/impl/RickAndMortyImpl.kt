@@ -16,24 +16,6 @@ class RickAndMortyImpl @Inject constructor(
     private val rickAndMortyApi: RickAndMortyApi
     ): RickAndMortyRepository {
 
-    override suspend fun getCharactersList(page: Int): Results<List<Characters>> {
-        return try {
-            val response = rickAndMortyApi.getCharactersList(page)
-            val charactersList = response.results.map { CharactersMapper.map(it) }
-            Results.Success(charactersList)
-        } catch (e: HttpException) {
-            Results.Error(
-                message = "Something went wrong!!",
-                data = null
-            )
-        } catch (e: IOException) {
-            Results.Error(
-                message = "Check your internet connection",
-                data = null
-            )
-        }
-    }
-
     override suspend fun getCharacterDetail(id: Int): Results<CharacterDetail> {
         val response = try {
             rickAndMortyApi.getCharacterDetail(id)
@@ -44,7 +26,7 @@ class RickAndMortyImpl @Inject constructor(
         return Results.Success(characterDetail)
     }
 
-    override suspend fun searchCharacters(query: String, page: Int): Results<List<Characters>> {
+    override suspend fun searchCharacters(query: String?, page: Int): Results<List<Characters>> {
         return try {
             val response = rickAndMortyApi.searchCharacters(query, page)
             val charactersList = response.results.map { CharactersMapper.map(it) }

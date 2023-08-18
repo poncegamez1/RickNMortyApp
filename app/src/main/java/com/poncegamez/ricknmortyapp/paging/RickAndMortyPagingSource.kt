@@ -7,6 +7,8 @@ import com.poncegamez.ricknmortyapp.repository.RickAndMortyRepository
 import com.poncegamez.ricknmortyapp.result.Results
 import java.lang.Exception
 
+private const val RNM_STARTING_PAGE_INDEX = 1
+
 class RickAndMortyPagingSource(private val repository: RickAndMortyRepository, private val query: String? = null) :
     PagingSource<Int, Characters>() {
 
@@ -16,15 +18,9 @@ class RickAndMortyPagingSource(private val repository: RickAndMortyRepository, p
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Characters> {
         return try {
-            val currentPage = params.key ?: 1
+            val currentPage = params.key ?: RNM_STARTING_PAGE_INDEX
 
-            val response = if (query.isNullOrEmpty()) {
-                repository.getCharactersList(currentPage)
-            } else {
-                repository.searchCharacters(query, currentPage)
-            }
-
-            when (response) {
+            when (val response = repository.searchCharacters(query, currentPage)) {
                 is Results.Success -> {
                     val data = response.data ?: emptyList()
                     val responseData = mutableListOf<Characters>()
@@ -32,7 +28,7 @@ class RickAndMortyPagingSource(private val repository: RickAndMortyRepository, p
 
                     LoadResult.Page(
                         data = responseData,
-                        prevKey = if (currentPage == 1) null else currentPage - 1,
+                        prevKey = if (currentPage == RNM_STARTING_PAGE_INDEX) null else currentPage - 1,
                         nextKey = currentPage + 1
                     )
                 }
@@ -42,7 +38,7 @@ class RickAndMortyPagingSource(private val repository: RickAndMortyRepository, p
                 is Results.Loading -> {
                     LoadResult.Page(
                         data = emptyList(),
-                        prevKey = if (currentPage == 1) null else currentPage - 1,
+                        prevKey = if (currentPage == RNM_STARTING_PAGE_INDEX) null else currentPage - 1,
                         nextKey = currentPage + 1
                     )
                 }
@@ -51,6 +47,4 @@ class RickAndMortyPagingSource(private val repository: RickAndMortyRepository, p
             LoadResult.Error(e)
         }
     }
-
-
 }
