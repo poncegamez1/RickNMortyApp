@@ -6,10 +6,11 @@ import com.poncegamez.ricknmortyapp.models.Characters
 import com.poncegamez.ricknmortyapp.repository.RickAndMortyRepository
 import com.poncegamez.ricknmortyapp.result.Results
 import java.lang.Exception
+import javax.inject.Inject
 
 private const val RNM_STARTING_PAGE_INDEX = 1
 
-class RickAndMortyPagingSource(private val repository: RickAndMortyRepository, private val query: String? = null) :
+class RickAndMortyPagingSource @Inject constructor(private val repository: RickAndMortyRepository, private val query: String? = null) :
     PagingSource<Int, Characters>() {
 
     override fun getRefreshKey(state: PagingState<Int, Characters>): Int? {

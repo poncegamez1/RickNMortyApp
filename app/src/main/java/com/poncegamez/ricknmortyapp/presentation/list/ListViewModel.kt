@@ -31,7 +31,7 @@ class ListViewModel @Inject constructor(
     private var searchJob: Job? = null
 
     private val debouncedSearchQuery = searchQuery
-        .debounce(300)
+        .debounce(500)
         .distinctUntilChanged()
 
     val searchListFlow = debouncedSearchQuery.flatMapLatest { query ->
