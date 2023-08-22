@@ -27,7 +27,7 @@ class ListViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _searchResults = MutableStateFlow<PagingData<Characters>>(PagingData.empty())
-    private val searchQuery = MutableStateFlow("")
+    private val searchQuery = MutableStateFlow(DEFAULT_QUERY)
     private var searchJob: Job? = null
 
     private val debouncedSearchQuery = searchQuery
@@ -40,15 +40,19 @@ class ListViewModel @Inject constructor(
             }.flow.cachedIn(viewModelScope)
     }
 
-    fun setSearchQuery(query: String) {
+    fun searchCharacters(query: String){
+        setSearchQuery(query)
+        searchCharacters()
+    }
+
+    private fun setSearchQuery(query: String) {
         searchQuery.value = query
     }
 
-    fun searchCharacters() {
+    private fun searchCharacters() {
         searchJob = viewModelScope.launch {
             val query = searchQuery.value
             if (query.isNotEmpty()) {
-                _searchResults.value = PagingData.empty()
                 searchListFlow.collectLatest { pagingData ->
                     _searchResults.value = pagingData
                 }
@@ -56,5 +60,9 @@ class ListViewModel @Inject constructor(
                 _searchResults.value = PagingData.empty()
             }
         }
+    }
+
+    companion object{
+        private const val DEFAULT_QUERY = ""
     }
 }

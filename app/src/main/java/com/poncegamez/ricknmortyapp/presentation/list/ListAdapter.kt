@@ -46,8 +46,10 @@ class ListAdapter :
     }
 
     override fun onBindViewHolder(holder: CharactersViewHolder, position: Int) {
-        holder.bind(getItem(position)!!)
-        holder.setIsRecyclable(false)
+        val currentItem = getItem(position)
+        if(currentItem != null){
+            holder.bind(currentItem)
+        }
     }
 
     private var onItemClickListener: ((Characters) -> Unit)? = null
