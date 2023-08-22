@@ -2,6 +2,8 @@ package com.poncegamez.ricknmortyapp.presentation.list
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -42,7 +44,10 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     private fun setUpRecyclerView() {
         binding.listRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = listAdapter
+            adapter = listAdapter.withLoadStateHeaderAndFooter(
+                header = ListLoadStateAdapter{listAdapter.retry()},
+                footer = ListLoadStateAdapter{listAdapter.retry()}
+            )
             setHasFixedSize(true)
         }
     }
@@ -60,6 +65,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     private fun setupSearchView() {
         binding.listSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
+                binding.listRecyclerView.scrollToPosition(0)
                 viewModel.searchCharacters(query)
                 Log.i("test1", query)
                 return true

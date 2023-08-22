@@ -5,7 +5,7 @@
     android:id="@+id/Constraintlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#97CE4C"
+    android:background="#97ce4c"
     tools:context=".presentation.detail.DetailFragment">
 
     <TextView
