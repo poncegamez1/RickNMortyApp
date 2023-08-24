@@ -19,12 +19,15 @@ class DetailViewModel @Inject constructor(
 ) : ViewModel() {
     private var detailState: MutableLiveData<CharacterDetail?> = MutableLiveData<CharacterDetail?>()
     val onDetailState: MutableLiveData<CharacterDetail?> get() = detailState
+    val isLoading = MutableLiveData<Boolean>()
 
     fun getDetailFromServer(characterId: Int){
         viewModelScope.launch(coroutineContext){
+            isLoading.postValue(true)
             val response = repository.getCharacterDetail(characterId)
             if (response is Results.Success && response.data != null) {
                 detailState.postValue(response.data)
+                isLoading.postValue(false)
             }
         }
     }

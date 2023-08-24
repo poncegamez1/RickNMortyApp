@@ -1,5 +1,8 @@
 package com.poncegamez.ricknmortyapp.presentation.list
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -16,7 +19,7 @@ class ListLoadStateAdapter(private val retry: () -> Unit) : LoadStateAdapter<Lis
     }
 
     override fun onBindViewHolder(holder: LoadStateViewHolder, loadState: LoadState) {
-        holder.bind(loadState)
+        holder.bind(loadState, holder.itemView.context)
     }
 
     inner class LoadStateViewHolder(private val binding : HeaderFooterLoadStateBinding) : RecyclerView.ViewHolder(binding.root){
@@ -26,12 +29,23 @@ class ListLoadStateAdapter(private val retry: () -> Unit) : LoadStateAdapter<Lis
                 retry.invoke()
             }
         }
-        fun bind(loadState: LoadState){
+        fun bind(loadState: LoadState, context: Context){
             binding.apply {
+                val isInternetConnected = checkInternetConnectivity(context)
                 progressBarLoadState.isVisible = loadState is LoadState.Loading
-                loadStateButton.isVisible = loadState !is LoadState.Loading
-                loadStateTextView.isVisible = loadState !is LoadState.Loading
+                loadStateButton.isVisible = !isInternetConnected
+                loadStateTextView.isVisible = !isInternetConnected
             }
         }
     }
+
+}
+
+fun checkInternetConnectivity(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    val network = connectivityManager.activeNetwork ?: return false
+    val networkCapabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+    return networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }

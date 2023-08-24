@@ -11,6 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import com.poncegamez.ricknmortyapp.R
 import com.poncegamez.ricknmortyapp.databinding.FragmentListBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +29,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentListBinding.bind(view)
+        setUpProgressBar()
         setUpAdapter()
         setUpRecyclerView()
         setupSearchView()
@@ -48,14 +51,15 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                 header = ListLoadStateAdapter{listAdapter.retry()},
                 footer = ListLoadStateAdapter{listAdapter.retry()}
             )
-            setHasFixedSize(true)
         }
     }
 
     private fun addSearchSubscriptions() {
         binding.apply {
             lifecycleScope.launchWhenCreated {
+                viewModel.isLoading.postValue(true)
                 viewModel.searchListFlow.collectLatest { pagingData ->
+                    viewModel.isLoading.postValue(false)
                     listAdapter.submitData(pagingData)
                 }
             }
@@ -65,7 +69,6 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     private fun setupSearchView() {
         binding.listSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                binding.listRecyclerView.scrollToPosition(0)
                 viewModel.searchCharacters(query)
                 Log.i("test1", query)
                 return true
@@ -77,6 +80,12 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                 return true
             }
         })
+    }
+
+    private fun setUpProgressBar(){
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            binding.listProgressBar.isVisible = it
+        }
     }
 
     override fun onDestroyView() {

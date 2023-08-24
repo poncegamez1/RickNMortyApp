@@ -7,7 +7,7 @@
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="4dp"
-    android:background="#C5EF95">
+    android:background="#97ce4c">
 
     <ProgressBar
         android:id="@+id/progressBar_load_state"

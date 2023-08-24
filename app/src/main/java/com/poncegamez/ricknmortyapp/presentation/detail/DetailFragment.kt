@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.poncegamez.ricknmortyapp.databinding.FragmentDetailBinding
 import com.squareup.picasso.Picasso
@@ -30,6 +32,10 @@ class DetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.isLoading.observe(this, Observer {
+            detailBinding.detailProgressBar.isVisible = it
+        })
+
         viewModel.getDetailFromServer(args.characterId)
     }
 
