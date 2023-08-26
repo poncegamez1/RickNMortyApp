@@ -10,4 +10,6 @@
     <string name="gender_text_view">Gender:</string>
     <string name="origin_text_view">Origin:</string>
     <string name="location_text_view">Location:</string>
+    <string name="loadstateText">Results could not be loaded</string>
+    <string name="loadStatebutton">Retry</string>
 </resources>

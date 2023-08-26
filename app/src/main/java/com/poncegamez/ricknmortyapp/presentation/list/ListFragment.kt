@@ -2,6 +2,8 @@ package com.poncegamez.ricknmortyapp.presentation.list
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -9,6 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
 import com.poncegamez.ricknmortyapp.R
 import com.poncegamez.ricknmortyapp.databinding.FragmentListBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,6 +29,7 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentListBinding.bind(view)
+        setUpProgressBar()
         setUpAdapter()
         setUpRecyclerView()
         setupSearchView()
@@ -42,15 +47,19 @@ class ListFragment : Fragment(R.layout.fragment_list) {
     private fun setUpRecyclerView() {
         binding.listRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
-            adapter = listAdapter
-            setHasFixedSize(true)
+            adapter = listAdapter.withLoadStateHeaderAndFooter(
+                header = ListLoadStateAdapter{listAdapter.retry()},
+                footer = ListLoadStateAdapter{listAdapter.retry()}
+            )
         }
     }
 
     private fun addSearchSubscriptions() {
         binding.apply {
             lifecycleScope.launchWhenCreated {
+                viewModel.isLoading.postValue(true)
                 viewModel.searchListFlow.collectLatest { pagingData ->
+                    viewModel.isLoading.postValue(false)
                     listAdapter.submitData(pagingData)
                 }
             }
@@ -71,6 +80,12 @@ class ListFragment : Fragment(R.layout.fragment_list) {
                 return true
             }
         })
+    }
+
+    private fun setUpProgressBar(){
+        viewModel.isLoading.observe(viewLifecycleOwner) {
+            binding.listProgressBar.isVisible = it
+        }
     }
 
     override fun onDestroyView() {

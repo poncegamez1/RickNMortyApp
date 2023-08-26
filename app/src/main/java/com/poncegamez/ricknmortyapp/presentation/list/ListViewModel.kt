@@ -1,5 +1,6 @@
 package com.poncegamez.ricknmortyapp.presentation.list
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -29,6 +30,7 @@ class ListViewModel @Inject constructor(
     private val _searchResults = MutableStateFlow<PagingData<Characters>>(PagingData.empty())
     private val searchQuery = MutableStateFlow(DEFAULT_QUERY)
     private var searchJob: Job? = null
+    val isLoading = MutableLiveData<Boolean>()
 
     private val debouncedSearchQuery = searchQuery
         .debounce(500)
@@ -51,13 +53,16 @@ class ListViewModel @Inject constructor(
 
     private fun searchCharacters() {
         searchJob = viewModelScope.launch {
+            isLoading.postValue(true)
             val query = searchQuery.value
             if (query.isNotEmpty()) {
                 searchListFlow.collectLatest { pagingData ->
                     _searchResults.value = pagingData
+                    isLoading.postValue(false)
                 }
             } else {
                 _searchResults.value = PagingData.empty()
+                isLoading.postValue(false)
             }
         }
     }
